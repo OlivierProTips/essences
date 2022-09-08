@@ -1,0 +1,64 @@
+<form version="1.1">
+  <label>Prix de l'essence</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time">
+      <label></label>
+      <default>
+        <earliest>@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="radio" token="type">
+      <label>Type</label>
+      <choice value="Gazole">Gazole</choice>
+      <choice value="SP95">SP95</choice>
+      <choice value="SP98">SP98</choice>
+      <choice value="E10">E10</choice>
+      <default>Gazole</default>
+      <initialValue>Gazole</initialValue>
+    </input>
+    <input type="text" token="cp">
+      <label>Code Postal</label>
+      <default>31</default>
+      <initialValue>31</initialValue>
+    </input>
+    <input type="text" token="prix_max">
+      <label>Prix Maximum</label>
+      <default>2.5</default>
+      <initialValue>2.5</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <viz type="leaflet_maps_app.maps-plus">
+        <title>Prix moyen $type$ : $price$ €</title>
+        <search>
+          <query>index=essence cp=$cp$* type=$type$ 
+          | search price&lt;$prix_max$
+          |eval latitude=latitude/100000, longitude=longitude/100000
+          | eventstats avg(price) as moyenne min(price) as min max(price) as max
+          | eval moyenne=round(moyenne,3)
+          | eval markerColor=case(price&lt;min*1.001,"darkblue",price&gt;min*1.1, "red",price&lt;min*1.05 AND price&gt;min,"green",price&gt;min*1.05 AND price&lt;min*1.1, "orange"),
+          icon=if(price&lt;min*1.001,"trophy","gas-pump"),
+          layerDescription=if(price&lt;min*1.001,"trophy","gas-pump")
+          | eval description = "&lt;b&gt;".type." ".price."&lt;/b&gt; 
+
+ &lt;br/&gt;".address."&lt;br/&gt;".cp." ".ville, tooltip=description, clusterGroup="default"
+| table latitude, longitude, description, tooltip, markerColor, icon, clusterGroup, layerDescription, moyenne</query>
+          <done>
+            <set token="price">$result.moyenne$</set>
+          </done>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="leaflet_maps_app.maps-plus.mapCenterLat">44</option>
+        <option name="leaflet_maps_app.maps-plus.mapCenterLon">2</option>
+        <option name="leaflet_maps_app.maps-plus.mapCenterZoom">7</option>
+        <option name="leaflet_maps_app.maps-plus.cluster">0</option>
+        <option name="leaflet_maps_app.maps-plus.disableClusteringAtZoom">2</option>
+      </viz>
+    </panel>
+  </row>
+</form>

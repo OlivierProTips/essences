@@ -1,0 +1,17 @@
+[app/ui]
+version = 9.0.0
+modtime = 1660136748.891396900
+
+[app/launcher]
+version = 9.0.0
+modtime = 1660136748.911186500
+
+[indexes/essence]
+owner = admin
+version = 9.0.0
+modtime = 1660136907.027448600
+
+[inputs/script%3A%2F%2F%24SPLUNK_HOME%5Cetc%5Capps%5Cessences%5Cbin%5Cessences.py]
+owner = admin
+version = 9.0.0
+modtime = 1660141120.330698400
